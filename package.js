@@ -1,6 +1,6 @@
 Package.describe({
   name: 'oorabona:yaac',
-  summary: 'Autcomplete and tagging for Meteor (AutoForm also)',
+  summary: 'Autocomplete and tagging for Meteor (AutoForm compatible)',
   version: '0.9.1',
   git: 'https://github.com/oorabona/meteor-yaac.git',
   documentation: 'README.md'
