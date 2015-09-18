@@ -1,0 +1,20 @@
+<head>
+  <title>Yet Another AutoComplete Demo</title>
+</head>
+
+<body>
+  <h1>Welcome to Meteor!</h1>
+
+  {{> demo_tags}}
+  {{> demo_tags_autoform}}
+</body>
+
+<template name="demo_tags">
+</template>
+
+<template name="demo_tags_autoform">
+  {{#quickForm schema="Demo" id="demo" doc=doc template="plain" validation="keyup" buttonContent=false}}
+    {{>quickField name="tags"}}
+    {{>quickField name="simple"}}
+  {{/quickForm}}
+</template>
