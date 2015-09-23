@@ -67,7 +67,6 @@
     top: 0;
     width: 100%;
     z-index: 2;
-    display: none\9;
 }
 .tagsinput-remove-link:before {
     color: #ffffff;
@@ -110,6 +109,7 @@
 {
     position: relative;
     padding: 10px;
+    min-width: 200px;
 }
 
 .inline-input {
@@ -117,7 +117,7 @@
   padding: 0px;
   margin: 0px;
   width: 100%;
-  /*top: 0px;*/
+  top: 0px;
   left: 0px;
   outline: none;
   background: transparent;
@@ -130,7 +130,7 @@
     padding: 0px;
     margin: 0px;
     width: 100%;
-    /*top: 0px;*/
+    top: 0px;
     left: 0px;
     outline: none;
     background: transparent;

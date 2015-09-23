@@ -1,20 +1,122 @@
 <head>
-  <title>Yet Another AutoComplete Demo</title>
+  <title>Yet Another Auto Complete Demo</title>
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
+  <header>
+    <nav class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar-collapse" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Yet Another Auto Complete for Meteor</a>
+        </div>
 
-  {{> demo_tags}}
-  {{> demo_tags_autoform}}
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="#tags">Tags Example (no AutoForm)</a></li>
+            <li><a href="#tags_af">Tags Example (with AutoForm)</a></li>
+            <li><a href="#todo">Textarea</a></li>
+            <li><a href="#todo">Multiple separators</a></li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+  </header>
+  <div class="container-fluid">
+    {{> demo_no_autoform}}
+    {{> demo_autoform}}
+    {{> todo}}
+  </div>
 </body>
 
-<template name="demo_tags">
+<template name="demo_no_autoform">
+  <div id="tags" class="panel panel-default">
+    <div class="panel-heading">
+      <h3>Autocomplete with tags, without AutoForm</h3>
+    </div>
+    <div class="panel-body">
+      <div class="col-md-6">
+        <label for="no_af_tags">Tags autocomplete (separator: comma)</label>
+        {{> yaac input=tags_input settings=tags_settings}}
+        <label for="no_af_inline">Inline autocomplete (with hasTags=true, separator: space)</label>
+        {{> yaac input=inline_input settings=inline_settings}}
+      </div>
+      <div class="col-md-6">
+        <p>
+          <b>Got tags predictions:</b> {{show_tags_p}}
+        </p>
+        <p>
+          <b>Got tags:</b> {{show_tags}}
+        </p>
+        <p>
+          <b>Got inline input predictions:</b> {{show_search_p}}
+        </p>
+        <p>
+          <b>Got inline input:</b> {{show_search}}
+        </p>
+      </div>
+    </div>
+  </div>
 </template>
 
-<template name="demo_tags_autoform">
-  {{#quickForm schema="Demo" id="demo" doc=doc template="plain" validation="keyup" buttonContent=false}}
-    {{>quickField name="tags"}}
-    {{>quickField name="simple"}}
-  {{/quickForm}}
+<template name="demo_autoform">
+  <div id="tags_af" class="panel panel-default">
+    <div class="panel-heading">
+      <h3>Autocomplete with tags, with AutoForm</h3>
+    </div>
+    <div class="panel-body">
+      <div class="col-md-6">
+      {{#quickForm schema="Demo" id="demo" doc=doc template="bootstrap3"}}
+        {{>quickField name="tags"}}
+        {{>quickField name="simple"}}
+      {{/quickForm}}
+      </div>
+      <div class="col-md-6">
+        <p>
+          <b>Got tags predictions:</b> {{show_tags_p}}
+        </p>
+        <p>
+          <b>Got tags:</b> {{show_tags}}
+        </p>
+        <p>
+          <b>Got inline input predictions:</b> {{show_search_p}}
+        </p>
+        <p>
+          <b>Got inline input:</b> {{show_search}}
+        </p>
+        <p>
+          <b>Submitted object:</b>
+          <textarea rows=5>{{show_object}}</textarea>
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="todo">
+  <div id="todo" class="panel panel-default">
+    <div class="panel-heading">
+      <h3>TODO</h3>
+    </div>
+    <div class="panel-body">
+      <ul>
+        <li>
+          Implement textarea
+        </li>
+        <li>
+          Implement multiple predictions
+        </li>
+      </ul>
+      <p>
+        Feel free to contribute to this project, it is hosted <a href="https://github.com/oorabona/meteor-yaac">here</a>.
+      </p>
+    </div>
+  </div>
 </template>
