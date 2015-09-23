@@ -22,6 +22,12 @@ setDefaultOptions = (settings) ->
     hasTags: true
     containerClass: 'tagsinput'
     tagClass: 'tag'
+    removeTagClass: 'tagsinput-remove-link'
+    inputContainerClass: 'tagsinput-add-container'
+    addLinkClass: 'tagsinput-add'
+    popoverContainerClass: 'tagsinput-popover'
+    popoverInnerClass: 'tagsinput-popover-table'
+    btnPredictionClass: 'btn btn-default'
     showAddTag: true
     popoverSuggestions: true
     showListIfEmpty: false
@@ -103,40 +109,42 @@ Template.yaac.helpers
       atts['data-tags'] = _.pluck(tags, refAttribute).join '|'
     atts
 
+# We need to handle clicks from two classes: 'addLinkClass' and 'removeTagClass'
+# So we only need to listen to one event and we check for currentTarget classList.
+# If one of these two classes is found, handle the case, otherwise do not interfere!
 Template.yaac.events
-  'click .tagsinput-remove-link': (evt, tmpl) ->
-    evt.preventDefault()
-    evt.stopImmediatePropagation()
+  'click': (evt, tmpl) ->
+    {classList} = evt.currentTarget
 
     inst = Template.instance()
     {settings} = inst.data.atts
 
-    tags = settings.tagsDeps.get()
-    tags.splice @index, 1
-    settings.tagsDeps.set tags
-    return
+    if classList.contains settings.removeTagClass
+      evt.preventDefault()
+      evt.stopImmediatePropagation()
 
-  'click .tagsinput-add': (evt, tmpl) ->
-    evt.preventDefault()
-    evt.stopImmediatePropagation()
+      tags = settings.tagsDeps.get()
+      tags.splice @index, 1
+      settings.tagsDeps.set tags
+    else if classList.contains settings.addLinkClass
+      evt.preventDefault()
+      evt.stopImmediatePropagation()
 
-    inst = Template.instance()
-    {settings} = inst.data.atts
+      input = tmpl.find('input[data-schema-key]')
+      {index} = @
+      results = settings.predictionsDeps.get()
 
-    input = tmpl.find('input[data-schema-key]')
-    {index} = @
-    results = settings.predictionsDeps.get()
+      if typeof index isnt 'undefined'
+        input.value = "#{@content}#{settings.separator}"
+        settings.predictionsDeps.set [@]
+      else
+        input.value += settings.separator
 
-    if typeof index isnt 'undefined'
-      input.value = "#{@content}#{settings.separator}"
-      settings.predictionsDeps.set [@]
-    else
-      input.value += settings.separator
+      input.focus()
 
-    input.focus()
+      # Manually trigger keyup event
+      $(input).trigger $.Event 'keyup'
 
-    # Manually trigger keyup event
-    $(input).trigger $.Event 'keyup'
     return
 
   'keyup input[data-schema-key]': (evt, tmpl) ->

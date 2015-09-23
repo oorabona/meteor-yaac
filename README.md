@@ -72,6 +72,12 @@ _.defaults settings or {}, {
   hasTags: true
   containerClass: 'tagsinput'
   tagClass: 'tag'
+  removeTagClass: 'tagsinput-remove-link'
+  inputContainerClass: 'tagsinput-add-container'
+  addLinkClass: 'tagsinput-add'
+  popoverContainerClass: 'tagsinput-popover'
+  popoverInnerClass: 'tagsinput-popover-table'
+  btnPredictionClass: 'btn btn-default'
   showAddTag: true
   popoverSuggestions: true
   showListIfEmpty: false
@@ -192,13 +198,13 @@ The default template is:
     {{#each tags}}
     <span class="{{../atts.settings.tagClass}}">
       <span>{{content}}&nbsp;&nbsp;</span>
-      <a class="tagsinput-remove-link"></a>
+      <a class="{{../atts.settings.removeTagClass}}"></a>
     </span>
     {{/each}}
     {{/if}}
-    <div class="tagsinput-add-container">
+    <div class="{{atts.settings.inputContainerClass}}">
       {{#if atts.settings.showAddTag}}
-      <a class="tagsinput-add"><span class="{{atts.settings.addIconClass}}"></span></a>
+      <a class="{{atts.settings.addLinkClass}}"><span class="{{atts.settings.addIconClass}}"></span></a>
       {{/if}}
       {{#if atts.settings.inlineSuggestion}}
       <div class="{{atts.settings.inlineContainerClass}}">
@@ -210,10 +216,10 @@ The default template is:
       {{/if}}
     </div>
     {{#if atts.settings.popoverSuggestions}}
-    <div class="tagsinput-popover">
-      <div class="tagsinput-popover-table">
+    <div class="{{atts.settings.popoverContainerClass}}">
+      <div class="{{atts.settings.popoverInnerClass}}">
         {{#each predictions}}
-        <button type="button" tabindex="{{this.tabindex}}" class="btn btn-default tagsinput-add xitem">{{content}}</button>
+        <button type="button" tabindex="{{this.tabindex}}" class="{{../atts.settings.btnPredictionClass}} {{../atts.settings.addLinkClass}}">{{content}}</button>
         {{/each}}
       </div>
     </div>
@@ -229,7 +235,7 @@ If you need something else to render, you will need to change default template.
 
 - Implement ```textarea```
 - Bug fixing
-- Code cleaning (those classes)
+- Code cleaning
 - Tests
 - Better documentation
 - Improved demo
