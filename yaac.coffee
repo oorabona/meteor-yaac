@@ -80,7 +80,7 @@ Template.afYaac.helpers
     # If we already have a value (loading)
     if _.isArray value
       # If this is an array, we must be dealing with a tag enabled structure.
-      unless settings.hasTags
+      unless @atts.settings.hasTags
         throw new Error "Erm. Got input value #{JSON.stringify value} but we should not accept it (hasTags is false)."
 
       # We ask prediction callback for more information before rendering
