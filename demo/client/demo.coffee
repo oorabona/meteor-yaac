@@ -84,7 +84,6 @@ Template.demo_no_autoform.helpers
 
   inline_settings: ->
     {
-      # hasTags: false
       inlineSuggestion: true
       inlineClass: 'inline-suggest'
       inputClass: 'inline-input'
@@ -115,7 +114,7 @@ Template.demo_autoform.helpers
   doc: ->
     {
       tags: [0,1,4]
-      inline: 'code'
+      search: [2,3]
     }
 
   show_tags: ->
