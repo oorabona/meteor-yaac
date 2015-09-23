@@ -2,13 +2,16 @@
 
 A new Meteor AutoForm-aware auto completion and tag handling widget !
 
-## What for ?
+## What's this ?
 
-Autocomplete fields and handle tokenization.
+Autocomplete fields and handle tokenization. My motivation is to find a Meteor only way to address this common question. You can see a demo [here](http://yaac.meteor.com).
 
 ## How to ?
 
-Let's start with a SimpleSchema example. So imagine you need to autocomplete user names in some kind of input box..
+You can use this "widget" either within AutoForm or stand alone.
+Let's review both, first with a SimpleSchema example. So imagine you need to autocomplete user names in some kind of input box..
+
+### SimpleSchema / AutoForm
 
 You define your schema somewhere appropriate:
 
@@ -60,12 +63,19 @@ And then, if you want to use AutoForm to render you basically do:
 
 For documentation about the above, please refer to [Meteor AutoForm](https://github.com/aldeed/meteor-autoform)
 
+### Stand alone
+
+If you want to use it outside the context of AutoForm, you can use dependencies tracking.
+As you can see in the [settings](#settings), you can specify two ```ReactiveVar```, one for __predictions__ one for __tags__. Of course the latter is only used if __hasTags__ is __true__.
+
+See the [demo](http://yaac.meteor.com/) for a complete example.
+
 ## Settings
 
 As you have seen in the example, settings have their own object. The full list of options:
 
 ```coffee
-_.defaults settings or {}, {
+_.extends {
   inlineSuggestion: false
   inlineClass: ''
   inlineContainerClass: ''
@@ -89,7 +99,7 @@ _.defaults settings or {}, {
   predictions: (tag, input) -> console.error "YAAC: No prediction callback set to handle input: #{input}!"
   predictionsDeps: new ReactiveVar false
   tagsDeps: new ReactiveVar []
-}
+}, settings or {}
 ```
 
 Where:
@@ -229,7 +239,7 @@ The default template is:
 </template>
 ```
 
-If you need something else to render, you will need to change default template.
+If you need something else to render, you will need to change the default template.
 
 # TODO
 
