@@ -1,10 +1,10 @@
 # Yet Another AutoComplete widget for Meteor (AutoForm)
 
-# If we have AutoForm installed somewhere ...
+# If AutoForm is installed, this would be useful to have :)
 if Package['aldeed:autoform']
   {AutoForm} = Package['aldeed:autoform']
   AutoForm.addInputType "ya-autocomplete",
-    template: 'yaac'
+    template: 'afYaac'
     valueOut: ->
       {tags} = @[0].dataset
       if typeof tags is 'string'
@@ -15,7 +15,7 @@ if Package['aldeed:autoform']
       @value = value
 
 setDefaultOptions = (settings) ->
-  _.defaults settings or {}, {
+  setup = _.extend {
     inlineSuggestion: false
     inlineClass: ''
     inlineContainerClass: ''
@@ -37,16 +37,39 @@ setDefaultOptions = (settings) ->
     separator: ','
     refAttribute: '_id'
     predictions: (tag, input) -> console.error "YAAC: No prediction callback set to handle input: #{input}!"
-    predictionsDeps: new ReactiveVar false
-    tagsDeps: new ReactiveVar []
-  }
+  }, settings or {}
 
-Template.yaac.rendered = ->
+  # Make sure we correctly init dependencies tracking
+  if setup.predictionsDeps instanceof ReactiveVar
+    setup.predictionsDeps.set false
+  else
+    setup.predictionsDeps = new ReactiveVar false
+
+  if setup.tagsDeps instanceof ReactiveVar
+    setup.tagsDeps.set []
+  else
+    setup.tagsDeps = new ReactiveVar []
+
+  setup
+
+# We wrap input and settings so that it fits nicely with the checks in afYaac.
+Template.yaac.helpers
+  setup: ->
+    self = @
+    {
+      atts:
+        placeholder: self.input.placeholder
+        id: self.input.id
+        'data-schema-key': self.input['data-schema-key'] or self.input.id
+        settings: self.settings
+    }
+
+Template.afYaac.rendered = ->
   # Manually trigger keyup event to make the list appear when rendered
   if @data.atts.settings.showListIfEmpty
     @$('input').trigger $.Event 'keyup'
 
-Template.yaac.helpers
+Template.afYaac.helpers
   setup: ->
     {value} = @
     {settings} = @atts
@@ -54,7 +77,13 @@ Template.yaac.helpers
 
     {refAttribute, tagsDeps, predictions} = @atts.settings
 
+    # If we already have a value (loading)
     if _.isArray value
+      # If this is an array, we must be dealing with a tag enabled structure.
+      unless settings.hasTags
+        throw new Error "Erm. Got input value #{JSON.stringify value} but we should not accept it (hasTags is false)."
+
+      # We ask prediction callback for more information before rendering
       tags = value.map (tag) ->
         cleanTags = false
         if _.isArray predictions
@@ -81,11 +110,12 @@ Template.yaac.helpers
       tag.index = index
       tag
 
+  # To render predictions nicely, make sure they have index and tabindex set.
   predictions: ->
     predictions = @atts.settings.predictionsDeps.get()
     if predictions then predictions.map (prediction, index) ->
-      prediction.index = index
-      prediction.tabindex = index + 1
+      prediction.index ?= index
+      prediction.tabindex ?= index + 1
       prediction
     else predictions
 
@@ -112,7 +142,7 @@ Template.yaac.helpers
 # We need to handle clicks from two classes: 'addLinkClass' and 'removeTagClass'
 # So we only need to listen to one event and we check for currentTarget classList.
 # If one of these two classes is found, handle the case, otherwise do not interfere!
-Template.yaac.events
+Template.afYaac.events
   'click': (evt, tmpl) ->
     {classList} = evt.currentTarget
 

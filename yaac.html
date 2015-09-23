@@ -1,4 +1,12 @@
 <template name="yaac">
+  {{#if input}}
+    {{#if settings}}
+      {{>afYaac setup}}
+    {{/if}}
+  {{/if}}
+</template>
+
+<template name="afYaac">
   {{#with setup}}
   <div class="{{atts.settings.containerClass}}">
     {{#if atts.settings.hasTags}}
