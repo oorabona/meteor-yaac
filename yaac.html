@@ -10,12 +10,14 @@
   {{#with setup}}
   <div class="{{atts.settings.containerClass}}">
     {{#if atts.settings.hasTags}}
+    {{#if atts.settings.showTags}}
     {{#each tags}}
     <span class="{{../atts.settings.tagClass}}">
       <span>{{content}}&nbsp;&nbsp;</span>
       <a class="{{../atts.settings.removeTagClass}}"></a>
     </span>
     {{/each}}
+    {{/if}}
     {{/if}}
     <div class="{{atts.settings.inputContainerClass}}">
       {{#if atts.settings.showAddTag}}

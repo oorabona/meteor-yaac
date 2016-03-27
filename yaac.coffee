@@ -20,6 +20,7 @@ setDefaultOptions = (settings) ->
     inlineClass: ''
     inlineContainerClass: ''
     hasTags: true
+    showTags: true
     containerClass: 'tagsinput'
     tagClass: 'tag'
     removeTagClass: 'tagsinput-remove-link'

@@ -80,6 +80,7 @@ _.extends {
   inlineClass: ''
   inlineContainerClass: ''
   hasTags: true
+  showTags: true
   containerClass: 'tagsinput'
   tagClass: 'tag'
   removeTagClass: 'tagsinput-remove-link'
@@ -112,6 +113,9 @@ Additional classes you want to set for inline search
 
 - __hasTags__ ```[Default: true]```
 Sets this if you want to enable tokenization of the input and tag creation. It implicitly enables the use of __separator__.
+
+- __showTags__ ```[Default: true]```
+Sets this if you want to show tags within the tags area. Purely UI.
 
 - __containerClass__ ```[Default: 'tagsinput']```
 - __tagClass__ ```[Default: 'tags']```
