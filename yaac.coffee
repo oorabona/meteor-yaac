@@ -194,9 +194,14 @@ Template.afYaac.events
     if predictions.length is 1
       if newValue is predictions[0].content or (newValue isnt predictions[0].content and settings.autoCompleteIfUnique)
         newTag = _.clone predictions[0]
-    else
-      if settings.allowNonExistent
-        newTag = content: newValue
+    # If we have more than one prediction, try to find an exact match
+    else if _.isArray predictions
+      hasValue = predictions.filter (prediction) -> prediction.content is newValue
+      if hasValue.length > 0
+        newTag = hasValue[0]
+    # Lastly, we might be interested in adding new tags from user input
+    else if settings.allowNonExistent
+      newTag = content: newValue
 
     {refAttribute} = settings
 
