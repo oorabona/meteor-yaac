@@ -1,0 +1,49 @@
+<template name="inline">
+  {{#if notLoaded}}
+  <h1>Please load data first !</h1>
+  {{else}}
+  <div id="inline" class="panel panel-default">
+    <div class="panel-heading">
+      <h3>Inline Autocomplete, without AutoForm</h3>
+    </div>
+    <div class="panel-body">
+      <div class="col-md-6">
+        <label for="no_af_inline">Dictionary predictions (with hasTags=true, separator: space)</label>
+        {{> yaac input=dict_input settings=dict_settings}}
+      </div>
+      <div class="col-md-6">
+        <p>
+          <b>Got inline input predictions:</b> {{show_search_p}}
+        </p>
+        <p>
+          <b>Got inline input:</b> {{show_search}}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div id="inline_af" class="panel panel-default">
+    <div class="panel-heading">
+      <h3>Inline Autocomplete, with AutoForm</h3>
+    </div>
+    <div class="panel-body">
+      <div class="col-md-6">
+      {{#quickForm schema="Schemas.inline" id="demo" doc=doc template="bootstrap3"}}
+        {{>quickField name="search"}}
+      {{/quickForm}}
+      </div>
+      <div class="col-md-6">
+        <p>
+          <b>Got inline input predictions:</b> {{show_search_p}}
+        </p>
+        <p>
+          <b>Got inline input:</b> {{show_search}}
+        </p>
+        <p>
+          <b>Submitted object:</b>
+          <textarea rows=5>{{showObject obj}}</textarea>
+        </p>
+      </div>
+    </div>
+  </div>
+  {{/if}}
+</template>

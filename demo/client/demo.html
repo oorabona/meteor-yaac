@@ -3,6 +3,9 @@
 </head>
 
 <body>
+</body>
+
+<template name="layout">
   <header>
     <nav class="navbar navbar-default navbar-static-top" role="navigation">
       <div class="container">
@@ -14,90 +17,64 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">Yet Another Auto Complete for Meteor</a>
+          <a class="navbar-brand" href="/">Yet Another Auto Complete for Meteor
+          <small>Can be used for...</small></a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-navbar-collapse">
           <ul class="nav navbar-nav">
-            <li><a href="#tags">Tags Example (no AutoForm)</a></li>
-            <li><a href="#tags_af">Tags Example (with AutoForm)</a></li>
-            <li><a href="#todo">Textarea</a></li>
-            <li><a href="#todo">Multiple separators</a></li>
+            <li><a href="{{pathFor 'tags'}}">Tags</a></li>
+            <li><a href="{{pathFor 'inline'}}">Search</a></li>
+            <li><a href="{{pathFor 'textarea'}}">Textarea</a></li>
+            <li><a href="{{pathFor 'full'}}">Full example</a></li>
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
   </header>
-  <div class="container-fluid">
-    {{> demo_no_autoform}}
-    {{> demo_autoform}}
-    {{> todo}}
-  </div>
-</body>
 
-<template name="demo_no_autoform">
-  <div id="tags" class="panel panel-default">
-    <div class="panel-heading">
-      <h3>Autocomplete with tags, without AutoForm</h3>
+  <div class="container-fluid">
+    <div class="col-sm-12">
+      <p class="text-center">
+        {{#if notLoaded}}
+        To use collection example, you need to first load the static client-only collection by clicking
+        <button id="loadColl" class="btn btn-primary">Here</button>
+        {{else}}
+        Collection ready, full english dictionary available: <b>{{dictCount}}</b> words loaded!
+        {{/if}}
+      </p>
     </div>
-    <div class="panel-body">
-      <div class="col-md-6">
-        <label for="no_af_tags">Tags autocomplete (separator: comma)</label>
-        {{> yaac input=tags_input settings=tags_settings}}
-        <label for="no_af_inline">Inline autocomplete (with hasTags=true, separator: space)</label>
-        {{> yaac input=inline_input settings=inline_settings}}
-      </div>
-      <div class="col-md-6">
-        <p>
-          <b>Got tags predictions:</b> {{show_tags_p}}
-        </p>
-        <p>
-          <b>Got tags:</b> {{show_tags}}
-        </p>
-        <p>
-          <b>Got inline input predictions:</b> {{show_search_p}}
-        </p>
-        <p>
-          <b>Got inline input:</b> {{show_search}}
-        </p>
-      </div>
-    </div>
+    {{>yield}}
   </div>
+
+  <!-- Fixed footer -->
+  <footer class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
+    <div class="container">
+      <ul class="nav navbar-nav">
+        <span class="navbar-text">
+          Made with &#x2661; at Paris using <a href="http://meteor.com">Meteor</a> and <a href="http://coffeescript.org">CoffeeScript</a>
+        </span>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+          <a href="https://github.com/oorabona/yaac"><i class="fa fa-lg fa-github"></i></a>
+        </li>
+        <li>
+          <a href="https://twitter.com/oorabona"><i class="fa fa-lg fa-twitter"></i></a>
+        </li>
+        <li>
+          <a href="https://www.linkedin.com/in/olivierorabona"><i class="fa fa-lg fa-linkedin"></i></a>
+        </li>
+      </ul>
+    </div>
+  </footer>
 </template>
 
-<template name="demo_autoform">
-  <div id="tags_af" class="panel panel-default">
-    <div class="panel-heading">
-      <h3>Autocomplete with tags, with AutoForm</h3>
-    </div>
-    <div class="panel-body">
-      <div class="col-md-6">
-      {{#quickForm schema="Demo" id="demo" doc=doc template="bootstrap3"}}
-        {{>quickField name="tags"}}
-        {{>quickField name="simple"}}
-      {{/quickForm}}
-      </div>
-      <div class="col-md-6">
-        <p>
-          <b>Got tags predictions:</b> {{show_tags_p}}
-        </p>
-        <p>
-          <b>Got tags:</b> {{show_tags}}
-        </p>
-        <p>
-          <b>Got inline input predictions:</b> {{show_search_p}}
-        </p>
-        <p>
-          <b>Got inline input:</b> {{show_search}}
-        </p>
-        <p>
-          <b>Submitted object:</b>
-          <textarea rows=5>{{show_object}}</textarea>
-        </p>
-      </div>
-    </div>
-  </div>
+<template name="home">
+  {{#markdown}}
+    {{getContent '/README.md'}}
+  {{/markdown}}
 </template>
 
 <template name="todo">

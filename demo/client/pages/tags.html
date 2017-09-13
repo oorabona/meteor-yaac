@@ -1,0 +1,49 @@
+<template name="tags">
+  {{#if notLoaded}}
+  <h1>Please load data first !</h1>
+  {{else}}
+  <div id="tags" class="panel panel-default">
+    <div class="panel-heading">
+      <h3>Autocomplete with tags, without AutoForm</h3>
+    </div>
+    <div class="panel-body">
+      <div class="col-md-6">
+        <label for="no_af_tags">Tags (collection), separator is ","</label>
+        {{> yaac input=tags_input settings=tags_settings}}
+      </div>
+      <div class="col-md-6">
+        <p>
+          <b>Got tags predictions:</b> {{show_tags_p}}
+        </p>
+        <p>
+          <b>Got tags:</b> {{show_tags}}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div id="tags_af" class="panel panel-default">
+    <div class="panel-heading">
+      <h3>Autocomplete with tags, with AutoForm</h3>
+    </div>
+    <div class="panel-body">
+      <div class="col-md-6">
+      {{#quickForm schema="Schemas.tags" id="demo" doc=doc template="bootstrap3"}}
+        {{>quickField name="tags"}}
+      {{/quickForm}}
+      </div>
+      <div class="col-md-6">
+        <p>
+          <b>Got tags predictions:</b> {{show_af_tags_p}}
+        </p>
+        <p>
+          <b>Got tags:</b> {{show_af_tags}}
+        </p>
+        <p>
+          <b>Submitted object:</b>
+          <textarea rows=5>{{showObject obj}}</textarea>
+        </p>
+      </div>
+    </div>
+  </div>
+  {{/if}}
+</template>
