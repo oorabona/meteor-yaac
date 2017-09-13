@@ -14,6 +14,23 @@ if Package['aldeed:autoform']
     valueIn: (value) ->
       @value = value
 
+###
+  @method Utility.addClass
+  @private
+  @param {Object} atts An object that might have a "class" property
+  @param {String} klass The class string to add
+  @return {Object} The object with klass added to the "class" property, creating the property if necessary
+###
+addClass = (atts, klass) ->
+  if 'string' is typeof atts['class']
+    atts['class'] += ' ' + klass
+  else
+    atts['class'] = klass
+
+  atts
+
+# Default options tailored for the demo.
+# FIXME: This would be better to have empty strings for classes maybe ?
 setDefaultOptions = (settings) ->
   setup = _.extend {
     inlineSuggestion: false
@@ -37,7 +54,7 @@ setDefaultOptions = (settings) ->
     autoCompleteIfUnique: true
     separator: ','
     refAttribute: '_id'
-    predictions: (tag, input) -> console.error "YAAC: No prediction callback set to handle input: #{input}!"
+    predictions: (tag, input) -> console.error "YAAC: No prediction callback (or Array) set to handle input: #{input}!"
   }, settings or {}
 
   # Make sure we correctly init dependencies tracking
@@ -56,16 +73,18 @@ setDefaultOptions = (settings) ->
 # We wrap input and settings so that it fits nicely with the checks in afYaac.
 Template.yaac.helpers
   setup: ->
+    {placeholder, id, name} = @input
     self = @
     {
       atts:
-        placeholder: self.input.placeholder
-        id: self.input.id
-        'data-schema-key': self.input['data-schema-key'] or self.input.id
+        placeholder: placeholder
+        id: id
+        name: name
+        'data-schema-key': self.input['data-schema-key'] or name or id
         settings: self.settings
     }
 
-Template.afYaac.rendered = ->
+Template.afYaac.onRendered ->
   # Manually trigger keyup event to make the list appear when rendered
   if @data.atts.settings.showListIfEmpty
     @$('input').trigger $.Event 'keyup'
@@ -79,7 +98,7 @@ Template.afYaac.helpers
     {refAttribute, tagsDeps, predictions} = @atts.settings
 
     # If we already have a value (loading)
-    if _.isArray value
+    if Array.isArray value
       # If this is an array, we must be dealing with a tag enabled structure.
       unless @atts.settings.hasTags
         throw new Error "Erm. Got input value #{JSON.stringify value} but we should not accept it (hasTags is false)."
@@ -87,14 +106,14 @@ Template.afYaac.helpers
       # We ask prediction callback for more information before rendering
       tags = value.map (tag) ->
         cleanTags = false
-        if _.isArray predictions
+        if Array.isArray predictions
           cleanTags = findInArray predictions, tag, null, refAttribute
         else if typeof predictions is 'function'
           cleanTags = predictions tag
           try
             check cleanTags, Match.Where (results) ->
               results.forEach (result) ->
-                result[refAttribute] isnt 'undefined' and typeof result.content is 'string'
+                typeof result[refAttribute] isnt 'undefined'
               true
           catch
             throw new Error "YAAC: predictions must be: [{#{refAttribute}: Number, content: String}, ...], got #{JSON.stringify cleanTags}"
@@ -106,8 +125,12 @@ Template.afYaac.helpers
 
     @
 
+  getContent: (refAttribute) ->
+    @[refAttribute]
+
   tags: ->
     @atts.settings.tagsDeps.get().map (tag, index) ->
+      return unless !!tag
       tag.index = index
       tag
 
@@ -133,7 +156,7 @@ Template.afYaac.helpers
 
   afInputTextAtts: ->
     atts = _.pick @atts, ['data-schema-key', 'id', 'name', 'placeholder']
-    atts = AutoForm.Utility.addClass atts, @atts.settings.inputClass
+    atts = addClass atts, @atts.settings.inputClass
     tags = @atts.settings.tagsDeps.get()
     {refAttribute} = @atts.settings
     if tags.length > 0
@@ -141,7 +164,7 @@ Template.afYaac.helpers
     atts
 
 # We need to handle clicks from two classes: 'addLinkClass' and 'removeTagClass'
-# So we only need to listen to one event and we check for currentTarget classList.
+# We listen to the 'click' event and we check for currentTarget classList.
 # If one of these two classes is found, handle the case, otherwise do not interfere!
 Template.afYaac.events
   'click': (evt, tmpl) ->
@@ -166,7 +189,7 @@ Template.afYaac.events
       results = settings.predictionsDeps.get()
 
       if typeof index isnt 'undefined'
-        input.value = "#{@content}#{settings.separator}"
+        input.value = "#{@[settings.refAttribute]}#{settings.separator}"
         settings.predictionsDeps.set [@]
       else
         input.value += settings.separator
@@ -191,20 +214,21 @@ Template.afYaac.events
     newTag = false
     input = evt.currentTarget
 
+    {refAttribute} = settings
+
     # If our predictions are sharp, clone it to unbind data
     if predictions.length is 1
-      if newValue is predictions[0].content or (newValue isnt predictions[0].content and settings.autoCompleteIfUnique)
+      if newValue is predictions[0][refAttribute] or (newValue isnt predictions[0][refAttribute] and settings.autoCompleteIfUnique)
         newTag = _.clone predictions[0]
     # If we have more than one prediction, try to find an exact match
-    else if _.isArray predictions
-      hasValue = predictions.filter (prediction) -> prediction.content is newValue
+    else if Array.isArray predictions
+      hasValue = predictions.filter (prediction) -> prediction[refAttribute] is newValue
       if hasValue.length > 0
         newTag = hasValue[0]
     # Lastly, we might be interested in adding new tags from user input
     else if settings.allowNonExistent
-      newTag = content: newValue
-
-    {refAttribute} = settings
+      newTag = {}
+      newTag[refAttribute] = newValue
 
     # separator is used only if hasTags is true
     if settings.hasTags and value[value.length-1] is settings.separator
@@ -229,14 +253,16 @@ Template.afYaac.events
       if _.isArray predictions
         cleanResults = findInArray predictions, null, value, refAttribute
       else if typeof predictions is 'function'
-        cleanResults = predictions null, value
-        try
-          check cleanResults, Match.Where (results) ->
-            results.forEach (result) ->
-              result[refAttribute] isnt 'undefined' and typeof result.content is 'string'
-            true
-        catch
-          throw new Error "YAAC: predictions must be: [{#{refAttribute}: Number, content: String}, ...]"
+        unsafePredictions = predictions null, value
+        if 'undefined' isnt typeof unsafePredictions
+          try
+            check unsafePredictions, Match.Where (results) ->
+              results.forEach (result) ->
+                typeof result[refAttribute] is 'string'
+              true
+            cleanResults = unsafePredictions
+          catch
+            throw new Error "YAAC: predictions must be: [{#{refAttribute}: String}, ...]"
       else
         throw new Error "Cannot handle this type: #{predictions}"
 
@@ -244,7 +270,9 @@ Template.afYaac.events
       # a visual feedback with current user input. Otherwise show nothing.
       if cleanResults.length is 0
         if settings.allowNonExistent
-          settings.predictionsDeps.set [{index: 0, content: value}]
+          obj = {}
+          obj[refAttribute] = value
+          settings.predictionsDeps.set [obj]
         else
           settings.predictionsDeps.set false
         return
@@ -260,7 +288,7 @@ Template.afYaac.events
 findInArray = (predictions, key, value, refAttribute) ->
   regex = new RegExp "^#{value}" if value
   if (value is null and key is null) or (value isnt null and key isnt null)
-    throw new Error "YAAC: Looks like a bug #{key} #{value}"
+    throw new Error "YAAC: findInArray must have at least key or value set, we have #{key} and #{value}. Bug?"
 
   predictions.map (p,idx) ->
     doc = {}
@@ -270,11 +298,10 @@ findInArray = (predictions, key, value, refAttribute) ->
         console.warn "YAAC: Predictions are Array based but inner Object do not contain any refAttribute (setup: #{refAttribute}), defaulting."
         doc[refAttribute] = idx
     else
-      doc[refAttribute] = idx
-      doc.content = p
+      doc[refAttribute] = p
     doc
   .filter (el) ->
     if value isnt null
-      el.content.match regex
+      el[refAttribute].match regex
     else if key isnt null
       el[refAttribute] is key

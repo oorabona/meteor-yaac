@@ -13,7 +13,7 @@
     {{#if atts.settings.showTags}}
     {{#each tags}}
     <span class="{{../atts.settings.tagClass}}">
-      <span>{{content}}&nbsp;&nbsp;</span>
+      <span>{{getContent ../atts.settings.refAttribute}}&nbsp;&nbsp;</span>
       <a class="{{../atts.settings.removeTagClass}}"></a>
     </span>
     {{/each}}
@@ -36,7 +36,7 @@
     <div class="{{atts.settings.popoverContainerClass}}">
       <div class="{{atts.settings.popoverInnerClass}}">
         {{#each predictions}}
-        <button type="button" tabindex="{{this.tabindex}}" class="{{../atts.settings.btnPredictionClass}} {{../atts.settings.addLinkClass}}">{{content}}</button>
+        <button type="button" tabindex="{{this.tabindex}}" class="{{../atts.settings.btnPredictionClass}} {{../atts.settings.addLinkClass}}">{{getContent ../atts.settings.refAttribute}}</button>
         {{/each}}
       </div>
     </div>
