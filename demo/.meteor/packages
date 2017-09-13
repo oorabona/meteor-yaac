@@ -28,3 +28,7 @@ random
 ejson
 spacebars
 check
+http
+iron:router
+markdown
+fortawesome:fontawesome
