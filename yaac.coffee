@@ -207,6 +207,9 @@ Template.afYaac.events
     {value} = evt.currentTarget
 
     predictions = settings.predictionsDeps.get()
+    unless Array.isArray predictions
+      # console.warn "YAAC: predictions must be defined as arrays. And no prediction to an empty array. We have #{predictions}. Make sure you fixed everything on your side. In the meantime, YAAC will be defaulting to empty array for you."
+      predictions = []
 
     # We try to remove last character. Useful side effect, no tag under
     # 2 characters can be made, newValue is undefined if value.length < 2
@@ -221,7 +224,7 @@ Template.afYaac.events
       if newValue is predictions[0][refAttribute] or (newValue isnt predictions[0][refAttribute] and settings.autoCompleteIfUnique)
         newTag = _.clone predictions[0]
     # If we have more than one prediction, try to find an exact match
-    else if Array.isArray predictions
+    else if predictions.length > 1
       hasValue = predictions.filter (prediction) -> prediction[refAttribute] is newValue
       if hasValue.length > 0
         newTag = hasValue[0]
@@ -250,7 +253,7 @@ Template.afYaac.events
       cleanResults = []
 
       {predictions} = settings
-      if _.isArray predictions
+      if Array.isArray predictions
         cleanResults = findInArray predictions, null, value, refAttribute
       else if typeof predictions is 'function'
         unsafePredictions = predictions null, value
